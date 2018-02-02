@@ -7,6 +7,7 @@ import (
     "fmt"
     "github.com/clevergo/captcha"
     "bytes"
+    "encoding/json"
 )
 
 type Response struct {
@@ -23,6 +24,11 @@ func main ()  {
 }
 //处理请求发送验证码图片链接
 func test(w http.ResponseWriter, r *http.Request)  {
+    err := r.ParseForm()
+    if err != nil {
+        fmt.Println("数据解析错误")
+    }
+    //var js Response
     
     fmt.Println(r.PostForm)
     w.Header().Set("Access-Control-Allow-Origin", "*")
