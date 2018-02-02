@@ -21,5 +21,10 @@ func test(w http.ResponseWriter, r *http.Request)  {
     w.Header().Add("Access-Control-Allow-Headers","Content-Type")
     w.Header().Set("content-type","application/json")
     fmt.Println(r)
-    io.WriteString(w, "这是从后台发送的数据")
+    d := struct {
+        CaptchaId string
+    }{
+        captcha.New(),
+        }
+    io.WriteString(w, d."http://101.132.118.202/img")
 }
