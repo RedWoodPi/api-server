@@ -6,6 +6,7 @@ import (
     "io"
     "fmt"
     "github.com/clevergo/captcha"
+    "bytes"
 )
 
 func main ()  {
@@ -20,11 +21,15 @@ func test(w http.ResponseWriter, r *http.Request)  {
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Add("Access-Control-Allow-Headers","Content-Type")
     w.Header().Set("content-type","application/json")
-    fmt.Println(r)
     d := struct {
         CaptchaId string
     }{
         captcha.New(),
         }
-    io.WriteString(w, d."http://101.132.118.202/img")
+    var buf  bytes.Buffer
+    buf.WriteString("http://101.132.118.202/img/")
+    buf.WriteString(d.CaptchaId)
+    buf.WriteString(".png")
+    fmt.Print(buf.String())
+    io.WriteString(w, buf.String())
 }
