@@ -7,8 +7,8 @@ import (
     "fmt"
     "github.com/clevergo/captcha"
     "bytes"
-    "github.com/gin-gonic/gin/json"
     "reflect"
+    "encoding/json"
 )
 
 type Response struct {
