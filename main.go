@@ -7,6 +7,8 @@ import (
     "fmt"
     "github.com/clevergo/captcha"
     "bytes"
+    "github.com/gin-gonic/gin/json"
+    "reflect"
 )
 
 type Response struct {
@@ -27,20 +29,30 @@ func test(w http.ResponseWriter, r *http.Request)  {
     if err != nil {
         fmt.Println("数据解析错误")
     }
-    //var js Response
+    var js Response
     
     fmt.Println(r.PostForm)
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Add("Access-Control-Allow-Headers","Content-Type")
     w.Header().Set("content-type","application/json")
+    
     d := struct {
         CaptchaId string
     }{
         captcha.New(),
-        }
+    }
     var buf  bytes.Buffer
     buf.WriteString("http://101.132.118.202/img/")
     buf.WriteString(d.CaptchaId)
     buf.WriteString(".png")
-    io.WriteString(w, buf.String())
+    js.Code = 1
+    js.Message = buf.String()
+    
+    data := make(map[string]interface{})
+    data[reflect.TypeOf(js).Field(0).Name] = reflect.ValueOf(js).Field(0).Interface()
+    
+    str, err := json.Marshal(data)
+    fmt.Println(str)
+    fmt.Println(string(str))
+    io.WriteString(w, string(str))
 }
