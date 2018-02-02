@@ -11,7 +11,7 @@ import (
 
 func main ()  {
     http.HandleFunc("/111", test)
-    http.Handle("/img", captcha.Server(captcha.StdWidth, captcha.StdHeight))
+    http.Handle("/img/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
     if err := http.ListenAndServe(":80", nil); err != nil {
         log.Fatal(err)
     }
