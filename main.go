@@ -26,7 +26,7 @@ func main ()  {
     http.HandleFunc("/111", test)
     //验证码服务，暂时关闭
     http.Handle("/img/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
-    if err := http.ListenAndServe(":8000", nil); err != nil {
+    if err := http.ListenAndServe(":80", nil); err != nil {
         log.Fatal(err)
     }
 }
