@@ -11,6 +11,8 @@ import (
     "encoding/json"
     "html/template"
     "api/weather"
+    "os"
+    "runtime"
 )
 
 type Response struct {
@@ -24,7 +26,7 @@ func main ()  {
     http.HandleFunc("/111", test)
     //验证码服务，暂时关闭
     http.Handle("/img/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
-    if err := http.ListenAndServe(":80", nil); err != nil {
+    if err := http.ListenAndServe(":8000", nil); err != nil {
         log.Fatal(err)
     }
 }
@@ -75,11 +77,23 @@ func test(w http.ResponseWriter, r *http.Request)  {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-    t, err := template.ParseFiles("index.html")
+    t, err := template.ParseFiles(path()+"index.html")
     if err != nil {
         fmt.Println(err)
         return
     }
     
     t.Execute(w, nil)
+}
+//根据系统判断文件路径
+func path()(p string){
+    osType := runtime.GOOS
+    path, _ := os.Getwd()
+    if osType == "windows" {
+        path = path + "\\"
+    }
+    if osType == "linux" {
+        path = path + "/"
+    }
+    return path
 }
