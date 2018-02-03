@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<title>查询</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://cdn.w3schools.wang/w3.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<script src="https://cdn.bootcss.com/layer/3.1.0/layer.js"></script>
+<body id="myPage">
+
+<div class="w3-container">
+    <h1>查询</h1>
+    <p class="w3-large">选择一个查询</p>
+</div>
+
+<div class="w3-row">
+    <div id="weather-main" class="w3-col w3-container m4 l3 w3-gray">
+        <h3>天气查询</h3>
+        <input id="city" placeholder="输入城市"><button id="weather">查询</button>
+        <div id="captcha1" style="display: none">
+            <img id="verify_img" src="" alt="验证码" onclick="">
+            <button id="test" value = "提交">确认</button>
+        </div>
+
+    </div>
+    <div class="w3-col w3-container m4 13">
+        <p>等待添加</p>
+        <p>等待添加</p>
+    </div>
+    <div class="w3-col w3-container m4 13">
+        <p>等待添加</p>
+        <p>等待添加</p>
+    </div>
+</div>
+<div id="captcha" style="padding:50px;display: none" >
+    <img src="javascript:(data.Message)"  id="img">
+    <input type="text">
+    <input type="submit">
+</div>
+</body>
+</html>
+<script>
+    $('#weather').click(function () {
+        var city = $('#city').val();
+        for(var i=0;i<7;i++){
+            $('#wdetail').remove();
+        }
+        $.ajax({
+            method:"POST",
+            data:{id:1,msg:city},
+            url:"/weather",
+            async:"false",
+            dataType:"text",
+            success: function (data) {
+                data = eval("(" + data + ")");
+                if (data.id == 404) {
+                    alert("输入城市错误！")
+                    return
+                }
+                for (var i=0;i<data.forecasts.length;i++) {
+                    var str1 = data.forecasts[i].weather[1] == "" || data.forecasts[i].weather[1] == data.forecasts[i].weather[0]?  "" : "转"+data.forecasts[i].weather[1] ;
+                    var str2 = data.forecasts[i].temprature[1] == "" || data.forecasts[i].temprature[1] == data.forecasts[i].temprature[0]? "" : "~"+data.forecasts[i].temprature[1];
+                    var str  = data.forecasts[i].date+"天气"+data.forecasts[i].weather[0]+str1+",气温"+data.forecasts[i].temprature[0]+str2
+                    $('#weather-main').append("<p id='wdetail'>"+str+"</p>")
+                }
+            }
+        })
+    })
+
+</script>

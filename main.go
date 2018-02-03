@@ -9,21 +9,38 @@ import (
     "bytes"
     "reflect"
     "encoding/json"
+    "html/template"
+    "api/weather"
 )
 
 type Response struct {
     Code int `json:"code"`
     Message string `json:"message"`
-} 
+}
 
 func main ()  {
+    http.HandleFunc("/weather", weatherController)
+    http.HandleFunc("/", index)
     http.HandleFunc("/111", test)
+    //验证码服务，暂时关闭
     http.Handle("/img/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
     if err := http.ListenAndServe(":80", nil); err != nil {
         log.Fatal(err)
     }
 }
-//处理请求发送验证码图片链接
+
+//天气查询控制
+func weatherController(w http.ResponseWriter, r *http.Request)  {
+    err := r.ParseForm()
+    if err != nil {
+        fmt.Println("数据解析错误")
+    }
+    str := weather.Weather(r.PostForm["msg"][0])
+    io.WriteString(w, str)
+    
+}
+
+//处理请求发送验证码图片链接，未启用
 func test(w http.ResponseWriter, r *http.Request)  {
     err := r.ParseForm()
     if err != nil {
@@ -31,7 +48,6 @@ func test(w http.ResponseWriter, r *http.Request)  {
     }
     var js Response
     
-    fmt.Println(r.PostForm)
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Add("Access-Control-Allow-Headers","Content-Type")
     w.Header().Set("content-type","application/json")
@@ -42,17 +58,28 @@ func test(w http.ResponseWriter, r *http.Request)  {
         captcha.New(),
     }
     var buf  bytes.Buffer
-    buf.WriteString("http://101.132.118.202/img/")
+    buf.WriteString("img/")
     buf.WriteString(d.CaptchaId)
     buf.WriteString(".png")
     js.Code = 1
     js.Message = buf.String()
+    fmt.Println(js)
     
     data := make(map[string]interface{})
-    data[reflect.TypeOf(js).Field(0).Name] = reflect.ValueOf(js).Field(0).Interface()
-    
+    for i:=0; i < reflect.TypeOf(js).NumField(); i++ {
+        data[reflect.TypeOf(js).Field(i).Name] = reflect.ValueOf(js).Field(i).Interface()
+    }
     str, err := json.Marshal(data)
-    fmt.Println(str)
     fmt.Println(string(str))
     io.WriteString(w, string(str))
+}
+
+func index(w http.ResponseWriter, r *http.Request) {
+    t, err := template.ParseFiles("api/index.html")
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    
+    t.Execute(w, nil)
 }
