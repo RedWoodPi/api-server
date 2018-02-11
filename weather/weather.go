@@ -41,7 +41,7 @@ func Weather(name string) (strs string){
     var s CitySlice
     s.Id = 1
     s.Name = "zhengzhou"
-    //进行序列化
+    //构造
     var forecasts [7]Forecast
     for i:=0; i<7; i++ {
         if i==0 {

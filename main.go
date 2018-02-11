@@ -13,6 +13,8 @@ import (
     "api/weather"
     "os"
     "runtime"
+    "api/chat"
+    "golang.org/x/net/websocket"
 )
 
 type Response struct {
@@ -24,12 +26,25 @@ func main ()  {
     http.HandleFunc("/weather", weatherController)
     http.HandleFunc("/", index)
     http.HandleFunc("/111", test)
+    http.Handle("/websocket", websocket.Handler(chat.WebSocket))
     //验证码服务，暂时关闭
+    http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
     http.Handle("/img/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
-    if err := http.ListenAndServe(":80", nil); err != nil {
+    if err := http.ListenAndServe(":8000", nil); err != nil {
         log.Fatal(err)
     }
 }
+//主页面
+func index(w http.ResponseWriter, r *http.Request) {
+    t, err := template.ParseFiles(path()+"view/index2.html")
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    
+    t.Execute(w, nil)
+}
+
 
 //天气查询控制
 func weatherController(w http.ResponseWriter, r *http.Request)  {
@@ -39,7 +54,6 @@ func weatherController(w http.ResponseWriter, r *http.Request)  {
     }
     str := weather.Weather(r.PostForm["msg"][0])
     io.WriteString(w, str)
-    
 }
 
 //处理请求发送验证码图片链接，未启用
@@ -76,15 +90,7 @@ func test(w http.ResponseWriter, r *http.Request)  {
     io.WriteString(w, string(str))
 }
 
-func index(w http.ResponseWriter, r *http.Request) {
-    t, err := template.ParseFiles(path()+"index.html")
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
-    
-    t.Execute(w, nil)
-}
+
 //根据系统判断文件路径
 func path()(p string){
     osType := runtime.GOOS
