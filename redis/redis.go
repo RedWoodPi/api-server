@@ -16,12 +16,8 @@ func init()  {
         MaxActive: 100,
         IdleTimeout: 120 * time.Second,
         Dial: func() (redis.Conn, error) {
-            c, err := redis.Dial("tcp", config.Host)
+            c, err := redis.Dial("tcp", config.Host, redis.DialPassword(config.Password))
             if err != nil {
-                return nil, err
-            }
-            if _, err := c.Do("AUTH", config.Password); err != nil {
-                c.Close()
                 return nil, err
             }
             return c, nil
