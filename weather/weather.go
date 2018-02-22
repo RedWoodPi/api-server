@@ -7,7 +7,8 @@ import (
     "strings"
     "encoding/json"
     "bytes"
-    "api/redis"
+    client "api/redis"
+    "github.com/garyburd/redigo/redis"
 )
 type CitySlice struct {
     Id int `json:"id"`
@@ -25,15 +26,14 @@ func Weather(name string) (strs string){
         return `{"id":404}`
     }
     //首先读取缓存
-    rc := redis.RedisClient.Get()
+    rc := client.RedisClient.Get()
     defer rc.Close()
-    result, err := rc.Do("GET", city)
+    result, err := redis.String(rc.Do("GET", city))
     if err != nil {
         fmt.Println(err)
     }
-    if result != nil {
-        fmt.Println(result)
-        return
+    if result != "" {
+        return result
     }
     
     content, err := goquery.ParseUrl("http://www.nmc.cn"+url)
