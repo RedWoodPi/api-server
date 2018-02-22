@@ -19,6 +19,10 @@ func init()  {
             if err != nil {
                 return nil, err
             }
+            if _, err := c.Do("AUTH", "qq25800O"); err != nil {
+                c.Close()
+                return nil, err
+            }
             return c, nil
         },
     }

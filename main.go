@@ -30,7 +30,7 @@ func main ()  {
     //验证码服务，暂时关闭
     http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
     http.Handle("/img/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
-    if err := http.ListenAndServe(":80", nil); err != nil {
+    if err := http.ListenAndServe(":8000", nil); err != nil {
         log.Fatal(err)
     }
 }
