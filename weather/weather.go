@@ -74,6 +74,7 @@ func Weather(name string) (strs string){
     }
     //转json
     b, err := json.Marshal(s)
+    //将结果存入redis，两小时后销毁，再次查询时更新
     rc.Do("SET", city, string(b))
     rc.Do("EXPIRE", city, 2*3600)
     return string(b)
