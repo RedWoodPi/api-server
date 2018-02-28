@@ -23,15 +23,6 @@ type Response struct {
 }
 
 func main ()  {
-    osType := runtime.GOOS
-    path, _ := os.Getwd()
-    if osType == "windows" {
-        path = path + "\\"
-    }
-    if osType == "linux" {
-        path = path + "/"
-    }
-    fmt.Println(path)
     http.HandleFunc("/weather", weatherController)
     http.HandleFunc("/", index)
     http.HandleFunc("/111", test)
