@@ -49,7 +49,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 //天气查询控制
 func weatherController(w http.ResponseWriter, r *http.Request)  {
     err := r.ParseForm()
-    fmt.Println(r.PostForm)
+    fmt.Println(r)
     if err != nil {
         fmt.Println("数据解析错误")
     }
